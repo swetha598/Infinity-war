@@ -11,8 +11,6 @@ db.on('open',function()
 	{	console.log("Connected")
 	})
 var user=require('./models')
-
-
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 app.post('/process_post', urlencodedParser, function (req, res) {
    response = new user({
@@ -26,9 +24,20 @@ app.post('/process_post', urlencodedParser, function (req, res) {
 		else console.log("success",data);
 	})
    console.log(response);
-   res.end("Signed in successfully");
+   res.end("Signed up successfully");
 })
 
+app.post('/home', urlencodedParser, function (req, res) {
+user.findOne({email:req.body.email}, function(err, user) {
+        if (err) throw err;
+        // test a matching password
+        user.comparePassword(req.body.pass,function(err, isMatch) {
+            if (err) throw err;
+            console.log(req.body.pass, isMatch); // -> Password123: true
+            res.end("Signed in successfully")
+        });
+    });
+});
 
 var server = app.listen(9000, function () {
    var host = server.address().address
